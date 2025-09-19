@@ -54,6 +54,6 @@
     "url": "https://github.com/yourusername/options-strategy-generator.git"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.x"
   }
 }

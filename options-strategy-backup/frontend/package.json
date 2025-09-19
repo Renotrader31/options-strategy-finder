@@ -1,14 +1,12 @@
 {
-  "name": "options-strategy-generator",
+  "name": "options-strategy-frontend",
   "version": "1.0.0",
-  "description": "Professional options strategy analysis and recommendation system",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "deploy": "vercel --prod"
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "14.2.14",
@@ -34,26 +32,9 @@
     "@types/react-dom": "18.3.1",
     "typescript": "5.6.3",
     "eslint": "8.57.1",
-    "eslint-config-next": "14.0.4",
-    "concurrently": "^8.2.2"
-  },
-  "keywords": [
-    "options",
-    "trading",
-    "strategy",
-    "analysis",
-    "finance",
-    "polygon-api",
-    "nextjs",
-    "fastapi"
-  ],
-  "author": "Options Strategy Generator",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/options-strategy-generator.git"
+    "eslint-config-next": "14.0.4"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.x"
   }
 }

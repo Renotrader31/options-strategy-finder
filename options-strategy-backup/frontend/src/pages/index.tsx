@@ -225,7 +225,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {strategies.map((strategy, index) => (
                   <motion.div
                     key={strategy.id || index}
