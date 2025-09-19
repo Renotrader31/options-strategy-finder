@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface StrategyLeg {
   type: 'call' | 'put';
-  action: 'BUY' | 'SELL';
+  action: 'buy' | 'sell';
   strike: number;
   expiry: string;
   quantity: number;
@@ -83,7 +83,7 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
     legs: [
       {
         type: 'put',
-        action: 'SELL',
+        action: 'sell',
         strike: bullPutShortStrike,
         expiry: primaryExpiry,
         quantity: 1,
@@ -92,7 +92,7 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
       },
       {
         type: 'put',
-        action: 'BUY',
+        action: 'buy',
         strike: bullPutLongStrike,
         expiry: primaryExpiry,
         quantity: 1,
@@ -134,10 +134,10 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
     probabilityOfProfit: 0.58 + Math.random() * 0.1,
     description: `Trade ${ticker} sideways between $${icPutShortStrike} and $${icCallShortStrike} by ${primaryExpiry}`,
     legs: [
-      { type: 'call', action: 'SELL', strike: icCallShortStrike, expiry: primaryExpiry, quantity: 1, premium: icCallShort.price, ...icCallShort.greeks },
-      { type: 'call', action: 'BUY', strike: icCallLongStrike, expiry: primaryExpiry, quantity: 1, premium: icCallLong.price, ...icCallLong.greeks },
-      { type: 'put', action: 'SELL', strike: icPutShortStrike, expiry: primaryExpiry, quantity: 1, premium: icPutShort.price, ...icPutShort.greeks },
-      { type: 'put', action: 'BUY', strike: icPutLongStrike, expiry: primaryExpiry, quantity: 1, premium: icPutLong.price, ...icPutLong.greeks }
+      { type: 'call', action: 'sell', strike: icCallShortStrike, expiry: primaryExpiry, quantity: 1, premium: icCallShort.price, ...icCallShort.greeks },
+      { type: 'call', action: 'buy', strike: icCallLongStrike, expiry: primaryExpiry, quantity: 1, premium: icCallLong.price, ...icCallLong.greeks },
+      { type: 'put', action: 'sell', strike: icPutShortStrike, expiry: primaryExpiry, quantity: 1, premium: icPutShort.price, ...icPutShort.greeks },
+      { type: 'put', action: 'buy', strike: icPutLongStrike, expiry: primaryExpiry, quantity: 1, premium: icPutLong.price, ...icPutLong.greeks }
     ],
     greeks: {
       delta: (icCallShort.greeks.delta - icCallLong.greeks.delta) + (icPutShort.greeks.delta - icPutLong.greeks.delta),
@@ -165,7 +165,7 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
     legs: [
       {
         type: 'put',
-        action: 'SELL',
+        action: 'sell',
         strike: cspStrike,
         expiry: primaryExpiry,
         quantity: 1,
@@ -195,8 +195,8 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
     probabilityOfProfit: 0.45 + Math.random() * 0.1,
     description: `Buy ${straddleStrike}C and ${straddleStrike}P. Profit if ${ticker} moves beyond $${(straddleStrike + straddleCost).toFixed(2)} or $${(straddleStrike - straddleCost).toFixed(2)}`,
     legs: [
-      { type: 'call', action: 'BUY', strike: straddleStrike, expiry: primaryExpiry, quantity: 1, premium: callOption.price, ...callOption.greeks },
-      { type: 'put', action: 'BUY', strike: straddleStrike, expiry: primaryExpiry, quantity: 1, premium: putOption.price, ...putOption.greeks }
+      { type: 'call', action: 'buy', strike: straddleStrike, expiry: primaryExpiry, quantity: 1, premium: callOption.price, ...callOption.greeks },
+      { type: 'put', action: 'buy', strike: straddleStrike, expiry: primaryExpiry, quantity: 1, premium: putOption.price, ...putOption.greeks }
     ],
     greeks: {
       delta: callOption.greeks.delta + putOption.greeks.delta,
@@ -222,7 +222,7 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
     probabilityOfProfit: 0.72 + Math.random() * 0.1,
     description: `Own 100 shares of ${ticker}, sell ${ccStrike}C. Cap gains at $${ccStrike}, collect premium`,
     legs: [
-      { type: 'call', action: 'SELL', strike: ccStrike, expiry: primaryExpiry, quantity: 1, premium: ccOption.price, ...ccOption.greeks }
+      { type: 'call', action: 'sell', strike: ccStrike, expiry: primaryExpiry, quantity: 1, premium: ccOption.price, ...ccOption.greeks }
     ],
     greeks: {
       delta: -ccOption.greeks.delta + 1, // Include stock delta
