@@ -176,7 +176,7 @@ export default function StrategyCard({ strategy, rank, confidenceColor, confiden
                   <div key={index} className="flex items-center justify-between bg-white p-2 rounded-lg text-xs">
                     <div className="flex items-center space-x-2">
                       <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
-                        leg.action === 'BUY' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                        leg.action.toLowerCase() === 'buy' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
                       }`}>
                         {leg.action}
                       </span>

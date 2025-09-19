@@ -17,6 +17,12 @@ export interface Strategy {
   volatilityImpact?: number;
   currentPrice?: number;
   ticker?: string;
+  greeks?: {
+    delta: number;
+    gamma: number;
+    theta: number;
+    vega: number;
+  };
 }
 
 export interface StrategyLeg {
