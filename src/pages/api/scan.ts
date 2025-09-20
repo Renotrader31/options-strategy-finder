@@ -70,17 +70,21 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
   const shortPutPrice = calculateOptionPrice(currentPrice, bullPutShortStrike, dte, iv, 0.05, false);
   const longPutPrice = calculateOptionPrice(currentPrice, bullPutLongStrike, dte, iv, 0.05, false);
   
-  const bullPutCredit = Math.max(shortPutPrice.price - longPutPrice.price, 0.5); // Ensure minimum credit
+  const bullPutCredit = shortPutPrice.price - longPutPrice.price;
   const bullPutMaxLoss = (bullPutShortStrike - bullPutLongStrike) - bullPutCredit;
   
-  strategies.push({
-    id: '1',
-    name: 'Bull Put Spread',
-    type: 'bullish',
-    confidence: 72.5 + Math.random() * 5,
-    maxProfit: Math.round(bullPutCredit * 100),
-    maxLoss: -Math.round(bullPutMaxLoss * 100),
-    capitalRequired: Math.round(Math.abs(bullPutMaxLoss * 100)),
+  // Only include profitable spreads
+  if (bullPutCredit <= 0.05) {
+    // Skip this strategy if not profitable enough
+  } else {
+    strategies.push({
+      id: '1',
+      name: 'Bull Put Spread',
+      type: 'bullish',
+      confidence: 72.5 + Math.random() * 5,
+      maxProfit: Math.round(bullPutCredit * 100),
+      maxLoss: -Math.round(bullPutMaxLoss * 100),
+      capitalRequired: Math.round(Math.abs(bullPutMaxLoss * 100)),
     probabilityOfProfit: 0.68 + Math.random() * 0.1,
     description: `Sell ${bullPutShortStrike}P, Buy ${bullPutLongStrike}P. Profit if ${ticker} stays above $${bullPutShortStrike} by ${primaryExpiry}`,
     legs: [
@@ -110,7 +114,8 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
       vega: shortPutPrice.greeks.vega - longPutPrice.greeks.vega
     },
     breakEvenPoints: [bullPutShortStrike - bullPutCredit]
-  });
+    });
+  }
 
   // Iron Condor - More realistic pricing
   const icCallShortStrike = strikes.find(s => s > currentPrice * 1.07) || strikes[6];
@@ -123,10 +128,11 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
   const icPutShort = calculateOptionPrice(currentPrice, icPutShortStrike, dte, iv, 0.05, false);
   const icPutLong = calculateOptionPrice(currentPrice, icPutLongStrike, dte, iv, 0.05, false);
   
-  const icCredit = Math.max((icCallShort.price - icCallLong.price) + (icPutShort.price - icPutLong.price), 1.0); // Ensure minimum credit
+  const icCredit = (icCallShort.price - icCallLong.price) + (icPutShort.price - icPutLong.price);
   const icMaxLoss = Math.max(icCallLongStrike - icCallShortStrike, icPutShortStrike - icPutLongStrike) - icCredit;
   
-  strategies.push({
+  if (icCredit > 0.10) { // Only include profitable Iron Condors
+    strategies.push({
     id: '2',
     name: 'Iron Condor',
     type: 'neutral',
@@ -149,7 +155,8 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
       vega: (icCallShort.greeks.vega - icCallLong.greeks.vega) + (icPutShort.greeks.vega - icPutLong.greeks.vega)
     },
     breakEvenPoints: [icPutShortStrike - icCredit, icCallShortStrike + icCredit]
-  });
+    });
+  }
 
   // Cash Secured Put
   const cspStrike = strikes.find(s => s < currentPrice * 0.95) || strikes[3];
@@ -244,10 +251,11 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
   const bearCallShort = calculateOptionPrice(currentPrice, bearCallShortStrike, dte, iv, 0.05, true);
   const bearCallLong = calculateOptionPrice(currentPrice, bearCallLongStrike, dte, iv, 0.05, true);
   
-  const bearCallCredit = Math.max(bearCallShort.price - bearCallLong.price, 0.3);
+  const bearCallCredit = bearCallShort.price - bearCallLong.price;
   const bearCallMaxLoss = (bearCallLongStrike - bearCallShortStrike) - bearCallCredit;
   
-  strategies.push({
+  if (bearCallCredit > 0.05) { // Only profitable credit spreads
+    strategies.push({
     id: '6',
     name: 'Bear Call Spread',
     type: 'bearish',
@@ -284,7 +292,8 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
       vega: bearCallShort.greeks.vega - bearCallLong.greeks.vega
     },
     breakEvenPoints: [bearCallShortStrike + bearCallCredit]
-  });
+    });
+  }
 
   // Bull Call Spread (for aggressive bullish outlook)
   const bullCallLongStrike = strikes.find(s => s > currentPrice * 1.02) || strikes[5];
@@ -293,10 +302,11 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
   const bullCallLong = calculateOptionPrice(currentPrice, bullCallLongStrike, dte, iv, 0.05, true);
   const bullCallShort = calculateOptionPrice(currentPrice, bullCallShortStrike, dte, iv, 0.05, true);
   
-  const bullCallDebit = Math.max(bullCallLong.price - bullCallShort.price, 1.0);
+  const bullCallDebit = bullCallLong.price - bullCallShort.price;
   const bullCallMaxProfit = (bullCallShortStrike - bullCallLongStrike) - bullCallDebit;
   
-  strategies.push({
+  if (bullCallDebit > 0 && bullCallMaxProfit > 0.10) { // Only profitable spreads
+    strategies.push({
     id: '7',
     name: 'Bull Call Spread',
     type: 'bullish',
@@ -333,7 +343,8 @@ function generateStrategies(currentPrice: number, ticker: string, minDte: number
       vega: bullCallLong.greeks.vega - bullCallShort.greeks.vega
     },
     breakEvenPoints: [bullCallLongStrike + bullCallDebit]
-  });
+    });
+  }
 
   return strategies;
 }
